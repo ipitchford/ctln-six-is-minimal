@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Cite the versioned unrefereed candidate; archival availability is not peer review."
+type: article
+title: "Six Is Minimal: Exact Certification and Infinite Families of Stable Nonclique CTLNs"
+authors:
+  - name: Anonymous
+version: 1.1.0-candidate
+date-released: 2026-10-01
+doi: 10.5281/zenodo.23089682
+url: https://github.com/ipitchford/ctln-six-is-minimal
+license: CC0-1.0

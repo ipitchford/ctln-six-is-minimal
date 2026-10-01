@@ -1,0 +1,6 @@
+Mathematical verifier: Python 3.9+ standard library only, assertions enabled.
+No network, external datasets, commercial solver or floating-point arithmetic
+is needed by the exact mathematical verification suite.
+Supplied v1.0 receipt: Python 3.13.5. Publication environment is recorded in
+REPLAY_RECEIPT.md separately; it is not inferred from the supplied receipt.
+Manuscript: pdfLaTeX and the packages declared in paper/main.tex.

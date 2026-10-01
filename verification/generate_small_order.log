@@ -1,0 +1,6 @@
+1 {'clique': 1}
+2 {'clique': 1, 'necessary_sign': 2}
+3 {'clique': 1, 'necessary_sign': 13, 'coefficient': 1, 'eigenvalue_1_minus_beta': 1}
+4 {'clique': 1, 'necessary_sign': 199, 'hurwitz': 1, 'eigenvalue_1_minus_beta': 12, 'coefficient': 5}
+5 {'clique': 1, 'necessary_sign': 9203, 'hurwitz': 22, 'eigenvalue_1_minus_beta': 242, 'coefficient': 134, 'quintic_split': 3, 'quadratic_quotient': 1, 'cycle_quadratic': 2}
+Generated 9846 records in 2.559 seconds

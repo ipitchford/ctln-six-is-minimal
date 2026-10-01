@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "arithmetic": "integers and exact fractions only",
+  "u_star_isolating_interval": [
+    "166355027849/1000000000000",
+    "3327100557/20000000000"
+  ],
+  "threshold_T_isolating_intervals": {
+    "1/10": [
+      "42837705183/10000000000",
+      "1338678287/312500000"
+    ],
+    "4/25": [
+      "105862479143/2000000000",
+      "132328098929/2500000000"
+    ]
+  },
+  "principal_minors_checked": 63,
+  "cramer_determinants_checked": 192,
+  "minimum_absolute_principal_determinant": 10,
+  "minimum_absolute_cramer_determinant": 1,
+  "simple_witness_hurwitz": [
+    710,
+    656116,
+    91363367194,
+    22420925202192763
+  ],
+  "external_threshold_subsets_checked": 64,
+  "elapsed_seconds": 0.009
+}

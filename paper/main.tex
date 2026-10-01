@@ -1,0 +1,705 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,amsthm,mathtools,booktabs,array,longtable}
+\usepackage{xcolor,hyperref,fancyhdr,enumitem}
+\hypersetup{colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,urlcolor=blue!45!black,
+ pdftitle={Six Is Minimal: Exact Certification and Infinite Families of Stable Nonclique CTLNs},
+ pdfauthor={Anonymous},pdfsubject={Evidence Press research candidate; computer-assisted mathematical proof}}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Stable nonclique CTLNs}\fancyhead[R]{\small Candidate v1.1}
+\fancyfoot[L]{\small Prepared for Evidence Press}\fancyfoot[R]{\thepage}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\adj}{\operatorname{adj}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\Ree}{\operatorname{Re}}
+\newcommand{\ND}{\mathcal{N}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\allowdisplaybreaks
+\setlist{nosep}
+\title{\vspace{-12mm}\textbf{Six Is Minimal}\\[2mm]
+\Large Exact Certification and Infinite Families\\of Stable Nonclique CTLNs}
+\author{Anonymous}
+\date{1 October 2026\quad |\quad Version 1.1 (candidate)}
+\begin{document}
+\maketitle
+\begin{abstract}
+We resolve the five-neuron gap left by the six-neuron counterexample to the target-free clique conjecture for combinatorial threshold-linear networks (CTLNs). For every legal parameter pair, a support of size at most five satisfies the algebraic stable-support conditions if and only if it is a target-free clique. Consequently, among nondegenerate legal CTLNs, the minimum size of a stable nonclique support is exactly six. The lower bound is a computer-assisted proof covering all 1,052,741 labelled loopless digraphs of orders one through five, with independently reconstructed integer-polynomial obstructions on the entire unbounded parameter region. The final exceptional cases are excluded by a quintic discriminant identity, rather than numerical sampling.
+
+Beyond minimality, we give an exact parameter classification for Geneson's six-neuron graph and a twin-cluster construction with stable nonclique full supports of every size $5r+6$, $r\geq0$. The latter has explicit rational legal parameters, an all-size polynomial stability certificate, and a parity proof of global nondegeneracy. We also state the weighted missing-input rule for implanting these supports in larger networks. The accompanying standard-library Python checker uses only integers and exact rational fractions. This is a candidate mathematical result, not a claim of completed external peer review or proof-assistant verification.
+\end{abstract}
+\vspace{2mm}
+\noindent\textbf{Keywords.} Threshold-linear network; stable fixed point; target-free clique; exact enumeration; Routh--Hurwitz criterion; equitable reduction.\\
+\textbf{MSC 2020.} 05C20, 37N25, 92B20.
+
+\section{Problem, contribution, and attribution}
+The target-free clique conjecture proposed that stable fixed-point supports in nondegenerate CTLNs are exactly target-free bidirected cliques. Curto, Geneson, and Morrison established the classification for supports of size at most four, together with several structural exclusions \cite{CGM2024}. Geneson subsequently disproved the general conjecture with a six-neuron graph \cite{G2026}. That graph, not a new six-vertex topology, is the seed used below.
+
+Our principal claim is a sharp minimum: five cannot work and six does. The constructive extensions go beyond an enumeration by giving a family with unbounded active support size and an exact stability region for the seed. All uses of ``stable'' below mean local exponential stability, or its precisely stated active-matrix counterpart; mere positivity of an equilibrium is never used as a substitute for stability.
+
+The finite exclusion and the explicit all-size parameter certificates are computer-assisted proofs. Their trusted numerical operations are arbitrary-precision integer arithmetic and exact rational arithmetic. The structural reductions, the quintic identities, the parameter-region argument, and the parity argument are given explicitly. No floating-point computation is part of a proof certificate.
+
+\paragraph{Scope.}
+We classify \emph{all supports of size at most five} and \emph{all legal parameters of one six-neuron motif}. We construct an infinite family of larger counterexamples. We do not claim a necessary-and-sufficient topology classification for every directed graph, nor existence at every integer support size above six. The standard nondegeneracy convention is retained for the dynamical minimum. The algebraic exclusion itself does not require nondegeneracy.
+
+\section{Model and exact reductions}\label{sec:model}
+Let $G$ be a loopless directed graph on $[n]$. A CTLN with uniform drive $\theta>0$ is
+\begin{equation}\label{eq:ode}
+ \dot x_i=-x_i+\left[\sum_{j=1}^nW_{ij}x_j+\theta\right]_+,
+ \qquad
+ W_{ij}=\begin{cases}
+ 0,&i=j,\\-1+\eps,&j\to i,\\-1-\delta,&j\not\to i,
+ \end{cases}
+\end{equation}
+where the legal parameters satisfy
+\begin{equation}\label{eq:legal}
+ \delta>0,\qquad 0<\eps<\frac{\delta}{1+\delta}.
+\end{equation}
+For an ordered candidate support $\sigma$ of size $m$, let $N$ be its nonedge matrix:
+$N_{ii}=0$ and $N_{ij}=1$ precisely when the source $j$ does not point to the target $i$.
+Thus $\sigma$ is a bidirected clique exactly when $N=0$.
+Put
+\begin{equation}\label{eq:K}
+ \beta=1+\frac{\delta}{\eps},\quad
+ t=\frac{1-\eps}{\eps},\quad
+ K=\eps^{-1}(I-W)_\sigma=I_m+\beta N+tJ_m,
+ \quad J_m=\ones_m\ones_m^T.
+\end{equation}
+Legality is equivalent to $\beta>2$ and $t(\beta-2)>1$. The change of variables
+\begin{equation}\label{eq:uv}
+ u=\beta-2>0,\qquad v=ut-1>0,\qquad t=\frac{1+v}{u}
+\end{equation}
+parametrizes the \emph{whole} legal region, with no upper cutoff.
+
+A real matrix is \emph{positive stable} if all its eigenvalues have positive real parts. It is \emph{permitted} for uniform input if it is nonsingular and its inverse sends $\ones$ to an entrywise positive vector. The algebraic stable-support conditions are that $K$ is permitted and positive stable, and that the off-support inputs of the resulting equilibrium are nonpositive.
+
+We use the usual global nondegeneracy assumption: every nonempty principal matrix of $I-W$ has nonzero determinant, and every determinant obtained from such a matrix by replacing one column with $\ones$ is nonzero. Under this assumption the off-support inequalities at a fixed point are strict. Indeed, equality at an outside vertex would give a zero coordinate in the solution of the enlarged active linear system, contradicting the corresponding Cramer determinant. The local Jacobian is then block triangular, with active diagonal block $-(I-W)_\sigma$ and inactive block $-I$. Thus the algebraic conditions are equivalent to local exponential stability \cite{CGM2019,CGM2024,G2026}.
+
+\begin{lemma}[Rank-one permission reduction]\label{lem:permission}
+Let $C=I+\beta N$, where $N\geq0$ and $\beta,t\geq0$. Then $C+tJ$ is permitted if and only if $C$ is permitted. When this holds, with $y=C^{-1}\ones$ and $s=\ones^Ty$,
+\begin{equation}\label{eq:permission}
+ (C+tJ)^{-1}\ones=\frac{y}{1+ts},\qquad
+ \det(C+tJ)=\det C\,(1+ts).
+\end{equation}
+If $C+tJ$ is also positive stable, then
+\begin{equation}\label{eq:cramernecessary}
+ \det C>0,\qquad \adj(C)\ones>0.
+\end{equation}
+\end{lemma}
+\begin{proof}
+This is the permission reduction in \cite[Lemma 2.1]{G2026}; we include the argument to specify the certificate logic. If $x=(C+tJ)^{-1}\ones>0$, then $Cx=a\ones$, with $a=1-t\ones^Tx$. Since $C\geq I$ entrywise, $a\ones\geq x>0$, so $a>0$. If $C$ were singular, a nonzero left-null vector would annihilate $\ones$ and hence also $C+tJ$, a contradiction. Therefore $C^{-1}\ones=x/a>0$. The converse and formulas follow by direct multiplication and the rank-one determinant identity. A real positive-stable matrix has positive determinant; since $1+ts>0$, the two strict inequalities in \eqref{eq:cramernecessary} follow.
+\end{proof}
+
+\subsection{Characteristic polynomials and Hurwitz determinants}
+Write
+\begin{equation}\label{eq:dv}
+ \det(I+\beta N)=\sum_{k=0}^m d_k\beta^k,
+ \qquad [\adj(I+\beta N)\ones]_i=\sum_{k=0}^{m-1}b_{ik}\beta^k,
+ \quad e_k=\sum_i b_{ik}.
+\end{equation}
+Multilinearity of the determinant gives the exact identity
+\begin{equation}\label{eq:characteristic}
+ \det(zI+K)=
+ \sum_{k=0}^{m}d_k\beta^k(z+1)^{m-k}
+ +t\sum_{k=0}^{m-1}e_k\beta^k(z+1)^{m-1-k}.
+\end{equation}
+In particular, each characteristic coefficient is affine in $t$.
+
+For $p(z)=a_0z^d+a_1z^{d-1}+\cdots+a_d$, $a_0>0$, set
+\begin{equation}\label{eq:hurwitz}
+ \Delta_j(p)=\det\bigl(a_{2c-r+1}\bigr)_{r,c=0}^{j-1},
+ \qquad a_k=0\text{ for }k\notin\{0,\ldots,d\}.
+\end{equation}
+The Routh--Hurwitz criterion says that every root of $p$ has negative real part exactly when all $\Delta_1,\ldots,\Delta_d$ are positive \cite{Gantmacher}. Also, a real polynomial with positive leading coefficient and all roots in the open left half-plane has every coefficient strictly positive. We use both necessary tests, and remove factors $z+1$ whenever convenient.
+
+\section{The five-neuron exclusion and the sharp minimum}\label{sec:minimum}
+\begin{theorem}[Exact small-support classification]\label{thm:small}
+For every nonzero zero-one matrix $N$ with zero diagonal and order $m\leq5$, and every legal pair $(\beta,t)$, the matrix
+\[
+ I_m+\beta N+tJ_m
+\]
+cannot be both permitted and positive stable. Consequently, the supports of size at most five satisfying the algebraic stable-support conditions are exactly the target-free cliques. The same conclusion holds for stable fixed points of any nondegenerate legal CTLN, regardless of the ambient network size.
+\end{theorem}
+
+\subsection{Finite certificate method}
+The finite part of the proof checks one canonical representative of each isomorphism class, while verifying coverage by explicitly marking its whole vertex-permutation orbit. Off-diagonal entries are encoded in row-major order, with the first entry in bit zero. Thus an integer mask determines $N$, with no external graph catalogue.
+
+For each representative, the checker reconstructs $\det C$, all Cramer numerators, and \eqref{eq:characteristic} using direct signed-permutation determinant expansions. The separate certificate generator uses Newton identities. The certificate records only the graph mask and an obstruction instruction; it does not provide trusted polynomial coefficients.
+
+The allowed obstructions are the following.
+\begin{enumerate}[label=(\roman*)]
+\item A determinant or Cramer numerator has all coefficients nonpositive after $\beta=2+u$. This contradicts \eqref{eq:cramernecessary} for every $u>0$.
+\item The characteristic polynomial vanishes identically at $z=\beta-1$, giving the negative eigenvalue $1-\beta$ of $K$.
+\item A characteristic coefficient, or a Hurwitz determinant, becomes coefficientwise nonpositive after substituting \eqref{eq:uv} and multiplying by a sufficient positive power of $u$.
+\item An exact factorization supplies an unstable quadratic or a quotient with a nonpositive coefficient.
+\item The quintic split argument proved below supplies a sign obstruction on the two regions $0<u<2$ and $u\geq2$.
+\end{enumerate}
+These are pointwise algebraic implications on the entire parameter region, not numerical grid tests. Empty polynomials represent the identically zero obstruction, which also contradicts required strict positivity.
+
+\begin{table}[ht]
+\centering
+\caption{Exhaustive graph coverage verified by explicit permutation orbits.}
+\begin{tabular}{rrr}\toprule
+Order & Isomorphism classes & Labelled matrices\\\midrule
+1&1&1\\2&3&4\\3&16&64\\4&218&4,096\\5&9,608&1,048,576\\\midrule
+Total&9,846&1,052,741\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Disjoint certificate types at order five. The clique is the sole permitted exception to exclusion.}
+\begin{tabular}{lr}\toprule
+Certificate type & Number of classes\\\midrule
+Clique ($N=0$)&1\\
+Necessary determinant/Cramer sign&9,203\\
+Eigenvalue $1-\beta$&242\\
+Characteristic-coefficient sign&134\\
+Hurwitz-determinant sign&22\\
+Unstable directed-cycle quadratic&2\\
+Quadratic factor followed by quotient sign&1\\
+Quintic discriminant split&3\\\midrule
+Total&9,608\\\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The final exceptional cases}
+After the determinant, coefficient, eigenvalue, and direct Hurwitz screens, six five-vertex masks remain:
+\[
+74883,\quad76900,\quad76966,\quad79298,\quad79491,\quad109731.
+\]
+For masks 79491 and 109731 the characteristic polynomial has the exact factor
+\begin{equation}\label{eq:cyclefactor}
+ (z+1)^2-\beta(z+1)+\beta^2.
+\end{equation}
+Its linear coefficient $2-\beta$ is negative, so it is not Hurwitz stable.
+For mask 76966 a factor is $(z+1)^2+\beta^2$ and the quotient is
+\begin{align}\label{eq:quotient}
+ &(z+1)^3-\beta^2(z+1)+2\beta^3\notag\\
+ &\hspace{13mm}+t\bigl(5(z+1)^2-8\beta(z+1)+7\beta^2\bigr).
+\end{align}
+Its coefficient of $z$ is $3-\beta^2+(10-8\beta)t<0$ for $\beta>2$, $t>0$.
+
+The remaining three cases use a reusable identity.
+\begin{lemma}[Quintic discriminant obstruction]\label{lem:quintic}
+For a monic real quintic
+$p=z^5+a_1z^4+a_2z^3+a_3z^2+a_4z+a_5$, put
+$X=a_1a_2-a_3$ and $Y=a_1a_4-a_5$. Then
+\begin{align}
+ \Delta_3&=a_3X-a_1Y,\label{eq:d3}\\
+ \Delta_4&=(a_3a_4-a_2a_5)X-Y^2,\label{eq:d4}\\
+ 4a_1^2\Delta_4&=(a_3^2-4a_1a_5)X^2-(2a_1Y-a_3X)^2.\label{eq:square}
+\end{align}
+In particular, if $a_1>0$ and $a_3^2-4a_1a_5\leq0$, then $p$ is not Hurwitz stable.
+\end{lemma}
+\begin{proof}
+Expand the third and fourth Hurwitz determinants to obtain \eqref{eq:d3}--\eqref{eq:d4}. Substituting $Y=a_1a_4-a_5$ and completing the square gives \eqref{eq:square}. The last assertion follows from $\Delta_4\leq0$.
+\end{proof}
+
+For each mask $h\in\{74883,76900,79298\}$ let $p_h$ be its characteristic quintic, with $a_1=5(1+t)>0$. Set
+\[
+ P_h(u,v)=-u^2(a_3^2-4a_1a_5)\bigm|_{\beta=2+u,\,t=(1+v)/u}.
+\]
+In each case every nonzero coefficient of $P_h$ is strictly positive except the coefficient $-1$ of $u^8$. The coefficient of $u^7$ is respectively $8,14,20$. Hence $P_h>0$ for $0<u\leq2$, $v>0$, because $c u^7-u^8=u^7(c-u)>0$ and all other nonzero terms are positive. On $u\geq2$, writing $u=2+x$, the polynomial
+\[
+ -u^2\Delta_2(p_h)\bigm|_{\beta=2+u,\,t=(1+v)/u,\,u=2+x}
+\]
+has every nonzero coefficient strictly positive, including its constant term. Thus $\Delta_2<0$ there. The explicit coefficient vectors appear in Appendix~\ref{app:hard}. The checker also validates the bounded interval through $u=2x/(1+x)$, an algebraically independent sign presentation of the same inequality.
+
+\begin{proof}[Proof of Theorem~\ref{thm:small}]
+The certificate file and checker establish the complete orbit cover in Table~1, with one valid obstruction for every nonzero representative. Each obstruction is sufficient by Lemma~\ref{lem:permission}, the Hurwitz criterion, the factor tests, or Lemma~\ref{lem:quintic}. This proves the matrix assertion. If $N=0$, then $K=I+tJ$ is permitted and positive stable. The external-input test in Section~\ref{sec:external} reduces exactly to target-freeness. The dynamical assertion follows from the nondegenerate support criterion of Section~\ref{sec:model}.
+\end{proof}
+
+\subsection{A compact exact witness at order six}\label{sec:witness}
+Take Geneson's graph \cite[Theorem 3.2]{G2026}, whose nonedge matrix is
+\begin{equation}\label{eq:Nseed}
+ N_0=\begin{pmatrix}
+0&0&0&0&1&1\\
+0&0&0&0&0&1\\
+0&0&0&0&0&1\\
+1&1&0&0&1&0\\
+0&0&1&1&0&0\\
+0&0&0&1&1&0
+\end{pmatrix}.
+\end{equation}
+The following rational point is distinct from the parameter ray used in that paper:
+\begin{equation}\label{eq:seedparams}
+ \eps=\frac1{12},\quad\delta=\frac{11}{120},\quad
+ \beta=\frac{21}{10},\quad t=11,\quad\theta=1.
+\end{equation}
+Legality follows from $t(\beta-2)=11/10>1$. Define
+\[
+ B=120(I-W)=10I+21N_0+110J.
+\]
+The exact positive equilibrium is
+\begin{equation}\label{eq:xseed}
+ x^*=\frac1{22726801}
+ (2034120,3972000,3972000,4806120,922800,7326120)^T.
+\end{equation}
+Indeed, multiplying its numerator by $B$ gives $120\cdot22726801\,\ones$.
+Direct expansion gives
+\begin{align}\label{eq:seedchar}
+ \det(zI+B)&=(z+10)g(z),\notag\\
+ g(z)&=z^5+710z^4+1549z^3+443674z^2+428237z+22726801.
+\end{align}
+Its first four Hurwitz determinants are
+\begin{equation}\label{eq:seedH}
+ 710,\quad656116,\quad91363367194,\quad22420925202192763.
+\end{equation}
+The fifth is $22726801\Delta_4>0$. Therefore $B$, and hence $I-W$, is positive stable. Exact enumeration of all nonempty subsets checks 63 nonzero principal determinants and 192 nonzero uniform-input column-replacement determinants; their minimum absolute values for the integer matrix $B$ are 10 and 1. Thus this legal CTLN is globally nondegenerate.
+
+\begin{corollary}[Sharp minimum]\label{cor:minimum}
+Among nondegenerate legal CTLNs, the minimum cardinality of a stable nonclique fixed-point support is exactly six.
+\end{corollary}
+\begin{proof}
+Theorem~\ref{thm:small} supplies the lower bound. Equations \eqref{eq:Nseed}--\eqref{eq:seedH} supply a nondegenerate full-support witness at six.
+\end{proof}
+
+\section{Twin reduction and an infinite constructive family}\label{sec:family}
+\subsection{The reduction}
+\paragraph{Relation to composite-graph theory.}
+Replacing each seed vertex by a bidirected clique gives the present family with component sizes $(1,3r+1,2r+1,1,1,1)$ in the seed order below. Composite graphs, simply-added splits, and inheritance of non-Perron eigenvalues are established tools: see \cite[Section 2.2, Lemma 2.6, and Section 5]{CGM2024}, building on \cite{CGM2019}. We do not claim clique expansion or transverse eigenvalue inheritance as new. Here the two expanded classes have identical incoming rows and combine into one class, leaving a five-dimensional \emph{weighted} quotient. The contribution is the particular multiplicities and legal parameter schedule, together with their explicit all-$r$ permission and Hurwitz certificates; those sign inequalities do not follow merely from calling the graph a composite graph.
+
+\begin{lemma}[Identical-row cluster reduction]\label{lem:twin}
+Partition the vertices into $k$ classes such that rows of $N$ agree within each class. Let $m_b$ be the size of class $b$, and let $M_{ab}$ be the number of nonedges in a row of class $a$ whose source is in class $b$. Write $w=(m_1,\ldots,m_k)^T$. Then
+\begin{equation}\label{eq:quotientfactor}
+ \det(zI_n+I_n+\beta N+tJ_n)
+ =(z+1)^{n-k}\det(zI_k+Q),
+ \qquad Q=I_k+\beta M+t\ones_k w^T.
+\end{equation}
+Permission is equivalent to permission of $I_k+\beta M$, with its solution replicated inside each class. Positive stability is equivalent to positive stability of $Q$.
+\end{lemma}
+\begin{proof}
+The subspace of vectors constant on each class is invariant, and the restriction is $Q$. On the quotient by that subspace, $N$ and $J$ induce zero maps, so $K$ induces the identity. This gives the factorization, without a diagonalizability assumption. Equivalently, subtracting two rows of $Cx=\ones$ in the same class gives equality of their solution coordinates. The factorization at $t=0$ proves the equivalence of nonsingularity for the unperturbed matrices; the replicated solution and Lemma~\ref{lem:permission} prove the permission claim. The transverse eigenvalues equal one and are positive.
+\end{proof}
+\begin{remark}
+Identical rows and zero diagonal force every class to be a bidirected clique. The quotient $Q$ is generally \emph{not} a $k$-neuron CTLN: the rank-one term is weighted by the class sizes. Thus reducing a six-neuron example to a quintic does not contradict the five-neuron exclusion.
+\end{remark}
+
+\subsection{Graph construction and explicit parameters}
+For each integer $r\geq0$, introduce vertices $a,c,d,e$ and a twin pool
+$T=A\sqcup B$ with
+\[
+ |A|=3r+1,\qquad |B|=2r+1,\qquad |T|=5r+2.
+\]
+There are $n=5r+6$ vertices. Specify the \emph{missing incoming sources} as follows; every other off-diagonal directed edge is present:
+\begin{center}
+\begin{tabular}{ll}\toprule
+Target & Missing incoming sources\\\midrule
+$a$ & $\{d,e\}$\\
+each vertex of $T$ & $\{e\}$\\
+$c$ & $\{a,d\}\cup A$\\
+$d$ & $\{c\}\cup B$\\
+$e$ & $\{c,d\}$\\\bottomrule
+\end{tabular}
+\end{center}
+Let this graph be $G_r$ and its nonedge matrix be $N_r$. At $r=0$ it is \eqref{eq:Nseed}, under the ordering $(a,A,B,c,d,e)$. The graph contains the clique $T\cup\{a\}$ of size $n-3$, but is itself not a clique.
+
+For the classes $(\{a\},T,\{c\},\{d\},\{e\})$, the quotient data are
+\begin{equation}\label{eq:familyquotient}
+ M_r=\begin{pmatrix}
+0&0&0&1&1\\
+0&0&0&0&1\\
+1&3r+1&0&1&0\\
+0&2r+1&1&0&0\\
+0&0&1&1&0
+\end{pmatrix},\qquad
+ w_r=(1,5r+2,1,1,1)^T.
+\end{equation}
+
+\begin{theorem}[Unbounded stable nonclique supports]\label{thm:family}
+For every integer $r\geq0$, set
+\begin{equation}\label{eq:familyparams}
+ D=30r+31,\quad
+ \eps=\frac1{2D+1},\quad
+ \delta=\frac{D+2}{D(2D+1)}.
+\end{equation}
+For every drive $\theta>0$, the CTLN on $G_r$ at these parameters is legal and globally nondegenerate, and has a stable fixed point with nonclique full support of size $5r+6$.
+\end{theorem}
+
+\subsection{Why the construction works}
+\paragraph{Choice of multiplicities and parameters.}
+The slopes $3$ and $2$ are a sufficient explicit choice, not a necessary ratio or an optimum. Their mathematical rationale is that substitution gives the positive permission vector and the strictly Hurwitz quartic displayed below for every $r\geq0$. The supplied record does not retain a complete discovery-search history, so we make no claim about how that choice was first found. Likewise, $D=30r+31$ is a convenient sufficient affine schedule: it stays odd for the parity argument, gives $\beta-2=2/D$ and $t=2D$ with legal margin $t(\beta-2)=4$, and makes all required polynomial coefficients positive. The certificate proves sufficiency of this schedule, not minimality of its constants or a classification of other schedules.
+
+The limiting value $\beta=2$ is not legal, but makes the mechanism transparent. With $C_0=I_5+2M_r$,
+\begin{equation}\label{eq:boundarypermission}
+ \det C_0=24r+13,\qquad
+ C_0^{-1}\ones_5=\frac{(1,3,3(2r+1),1,12r+5)^T}{24r+13}>0.
+\end{equation}
+The coefficient of $t$ in $\det(zI_5+C_0+t\ones_5w_r^T)$ is the quartic
+\begin{equation}\label{eq:boundaryquartic}
+ q_r(z)=(5r+6)z^4+2z^3+(58r+34)z^2+6z+(33r+16).
+\end{equation}
+Its Hurwitz determinants are
+\[
+ 2,\qquad2(43r+16),\qquad128(3r+1),\qquad
+ (33r+16)128(3r+1),
+\]
+all positive. Hence the four limiting roots lie in the open left half-plane. For each fixed $r$, first increase $\beta$ slightly above two while preserving permission and the strict Hurwitz inequalities for the coefficient-of-$t$ quartic. Then choose $t$ sufficiently large and larger than $1/(\beta-2)$. The rank-one large-$t$ argument gives four roots converging to the quartic roots and one additional negative real root; the trace fixes the sign of that last root. This explains why legal parameters are available. It does not by itself select uniform or explicit parameters, which is the purpose of the next certificate.
+
+\subsection{All-size exact certificate}
+At \eqref{eq:familyparams}, $\beta=2+2/D$ and $t=2D$, so
+$t(\beta-2)=4>1$. Define the integer quotient matrices
+\begin{equation}\label{eq:integerquotients}
+ C_r=DI_5+(2D+2)M_r,\qquad
+ B_r=C_r+2D^2\ones_5w_r^T.
+\end{equation}
+The matrix $B_r$ equals $D$ times the reduced active matrix $Q$.
+Every coefficient of $\det C_r$ and of each of its five uniform-input Cramer numerators, viewed as polynomials in $r$, is positive. Explicitly,
+\begin{align}\label{eq:familydet}
+ \det C_r={}&583200000r^6+3426300000r^5+8314110000r^4\notag\\
+ &+10645290000r^3+7565236200r^2+2818704278r+427747487.
+\end{align}
+The five Cramer numerators, in class order, are
+\begin{align}\label{eq:familycramers}
+ &1458000r^4+5752800r^3+8453400r^2+5475584r+1316865,\notag\\
+ &(30r+31)^2(2700r^2+5760r+3073),\notag\\
+ &(2700r^2+5760r+3073)(1800r^3+4920r^2+4220r+1089),\notag\\
+ &(30r+31)(16200r^3+56940r^2+66274r+25567),\notag\\
+ &9720000r^5+45522000r^4+83653200r^3\notag\\
+ &\hspace{19mm}+74881320r^2+32283392r+5253121.
+\end{align}
+Thus the full support is permitted by Lemmas~\ref{lem:permission} and \ref{lem:twin}.
+
+Write $\det(zI_5+B_r)=z^5+a_1(r)z^4+\cdots+a_5(r)$. Exact expansion by sums of principal minors, followed by \eqref{eq:hurwitz}, gives the following positive-coefficient certificates. Every degree from zero through the displayed degree has a strictly positive coefficient.
+\begin{center}
+\begin{tabular}{lrr}\toprule
+Polynomial & Degree in $r$ & Smallest coefficient\\\midrule
+$a_5$&7&32,362,480,939\\
+$\Delta_1$&3&9,000\\
+$\Delta_2$&6&648,000,000\\
+$\Delta_3$&11&26,487,782,951,364,632\\
+$\Delta_4$&16&3,197,149,056,000,000,000,000,000\\\bottomrule
+\end{tabular}
+\end{center}
+For example, $\Delta_1=(30r+31)(300r^2+670r+377)$. The complete coefficient vectors, not just the minima, are in \code{certificates/infinite\_family.json}; \code{verify\_family.py} reconstructs them directly from \eqref{eq:familyquotient} and \eqref{eq:integerquotients}. Hence all five Hurwitz determinants are positive for every real $r\geq0$, the last being $a_5\Delta_4$. Lemma~\ref{lem:twin} supplies the remaining $5r+1$ stable transverse eigenvalues for integer $r$.
+
+It remains to ensure global nondegeneracy, rather than just nondegeneracy of the full equilibrium. The full integer active matrix is
+\begin{equation}\label{eq:parity}
+ D K=D I_n+(2D+2)N_r+2D^2J_n\equiv I_n\pmod2,
+\end{equation}
+since $D=30r+31$ is odd. Every principal determinant is therefore odd. After any principal column is replaced by $\ones$, the determinant is still one modulo two: in the identity matrix, multilinearity leaves only the component matching the replaced column. All required determinants are nonzero. Scaling back from $DK$ to $I-W$ preserves nonvanishing.
+
+\begin{proof}[Proof of Theorem~\ref{thm:family}]
+Legality follows from $t(\beta-2)=4$. Equations \eqref{eq:familydet}--\eqref{eq:familycramers} prove permission. The positive Hurwitz coefficient certificate and Lemma~\ref{lem:twin} prove positive stability. Equation~\eqref{eq:parity} proves global nondegeneracy. The nonedge specification is nonempty, so the full support is not a clique. A full positive equilibrium has no off-support conditions.
+\end{proof}
+
+\begin{remark}[A reusable nondegenerate parameter grid]
+The parity proof in \eqref{eq:parity} applies to \emph{any} loopless graph and any positive odd integer $D$, at $\beta=2+2/D$ and $t=2D$. It certifies nondegeneracy, not stability. The parity device is consistent with the modular argument in \cite{G2026}; its use here fixes explicit legal parameters for every member of the constructed family.
+\end{remark}
+
+\begin{remark}[Size-dependent stability]
+Theorem~\ref{thm:family} uses parameters depending on $r$. Its $5r+1$ transverse eigenvalues of $K$ equal $1$, so the corresponding physical Jacobian eigenvalues are $-\eps_r=-1/(60r+63)$ and approach zero. Each network is locally exponentially stable, but this schedule has no positive size-independent spectral decay margin. Existence of unbounded active supports at a single fixed legal parameter pair is not proved here.
+\end{remark}
+
+\section{Exact legal parameter region of the seed}\label{sec:phase}
+We now classify full-support stability of \eqref{eq:Nseed} for \emph{all} legal parameters. This result does not assume global nondegeneracy at every parameter point: the positive full-support equilibrium is in a smooth linear region whenever it exists.
+
+There is an exact factorization
+\begin{equation}\label{eq:seedquintic}
+ \det(zI_6+I_6+\beta N_0+tJ_6)=(z+1)f_{\beta,t}(z),
+\end{equation}
+where $f=z^5+a_1z^4+\cdots+a_5$ and
+\begin{align}\label{eq:seedcoefficients}
+ a_1={}&5+6t,\notag\\
+ a_2={}&10-\beta^2+(24-11\beta)t,\notag\\
+ a_3={}&10-3\beta^2+4\beta^3+(36-33\beta+16\beta^2)t,\notag\\
+ a_4={}&5-3\beta^2+8\beta^3-3\beta^4
+             +(24-33\beta+32\beta^2-10\beta^3)t,\notag\\
+ a_5={}&1-\beta^2+4\beta^3-3\beta^4+\beta^5
+             +(6-11\beta+16\beta^2-10\beta^3+3\beta^4)t.
+\end{align}
+With $u=\beta-2$, write
+\begin{equation}\label{eq:phaseH4}
+ \Delta_4(u,t)=\sum_{j=0}^4 B_j(u)t^j,
+\end{equation}
+where the $B_j$ are listed in Appendix~\ref{app:phase}. In particular,
+\begin{equation}\label{eq:F}
+ B_4(u)=6F(u),\qquad
+ F(u)=797u^6+3096u^5+5684u^4+4712u^3+1536u^2-1184u+128.
+\end{equation}
+
+\begin{theorem}[Sharp seed phase region]\label{thm:phase}
+The polynomial $F$ has a unique zero $u_*$ in $(0,2/11)$, with
+\begin{equation}\label{eq:uroot}
+ \frac4{25}<u_*<\frac16,\qquad
+ 0.166355027849<u_*<0.166355027850.
+\end{equation}
+For each $0<u<u_*$, the quartic $\Delta_4(u,t)$ has exactly one positive zero $T(u)$. At legal parameters, Geneson's graph \eqref{eq:Nseed} has a stable positive full-support fixed point if and only if
+\begin{equation}\label{eq:phaseregion}
+ \boxed{\quad 0<u<u_*,\qquad t>\max\{1/u,T(u)\}.\quad}
+\end{equation}
+Equivalently, with $\delta=(1+u)\eps$,
+\[
+ 0<u<u_*,\qquad
+ 0<\eps<\min\left\{\frac{u}{1+u},\frac1{1+T(u)}\right\}.
+\]
+\end{theorem}
+
+\subsection{Permission and the first exclusion}
+Let $C=I+\beta N_0$. Its determinant is
+\[
+ d(\beta)=\beta^5-3\beta^4+4\beta^3-\beta^2+1,
+\]
+and its six Cramer numerators are
+\begin{align}\label{eq:seedcramers}
+ &(\beta-1)(\beta^3-2\beta^2+\beta-1),\notag\\
+ &\beta^2-\beta+1,\qquad \beta^2-\beta+1,\notag\\
+ &(\beta-1)^2(\beta^2-\beta+1),\notag\\
+ &-\beta^3+3\beta^2-2\beta+1,\notag\\
+ &\beta^4-3\beta^3+4\beta^2-2\beta+1.
+\end{align}
+After $\beta=2+u$, all these polynomials have positive coefficients except the fifth numerator, which is $1-2u-3u^2-u^3$. The latter is decreasing and equals $707/1331>0$ at $U=2/11$. Therefore permission holds for $0<u<U$ and every $t\geq0$, and $a_5>0$ there.
+
+The second Hurwitz determinant is
+\begin{equation}\label{eq:phaseD2}
+ \Delta_2=(12-66u)t^2+(12-110u-22u^2)t-(56u+26u^2+4u^3).
+\end{equation}
+For $u\geq U$, its coefficients are nonpositive and its constant term is negative. Thus no stable full-support equilibrium is possible there.
+
+\subsection{The cutoff and the unique fourth-determinant threshold}
+Every coefficient of $F''$ is positive. Also,
+\begin{align*}
+ F(4/25)&=303962112/244140625>0,\\
+ F(1/6)&=-2371/46656<0,\qquad F(U)=-2336256/1771561<0,\\
+ F'(1/6)&<0.
+\end{align*}
+Thus $F$ is strictly decreasing up to $1/6$, has exactly one zero before that point, and, by convexity and the two negative endpoint values, has no zero between $1/6$ and $U$. This proves the first part of \eqref{eq:uroot}; the decimal bounds are exact rational sign isolators.
+
+The explicit coefficients in Appendix~\ref{app:phase} give, on $0\leq u\leq U$,
+\begin{align}\label{eq:coefficientbounds}
+ B_0(u)&\leq-1024-1982u,& B_1(u)&\leq-2048-4148u,\notag\\
+ B_2(u)&\leq-256-7750u,& B_3(u)&\leq1536-9816u.
+\end{align}
+For completeness, each $B_j$ has the form $c_0-c_1u+\sum_{k\geq2}c_ku^k$, $c_k\geq0$. Bound $u^k\leq U^{k-1}u$ and evaluate the resulting rational slope. The exact slope margins are stored and recomputed by the checker.
+
+If $u\geq u_*>4/25$, all five $B_j(u)$ are nonpositive, and $B_0<0$, so $\Delta_4(u,t)<0$ for every $t>0$. If $0<u<u_*$, then $B_4>0$ and $B_0,B_1,B_2<0$, with no restriction needed on $B_3$. Descartes' rule of signs gives exactly one positive root $T(u)$, with $\Delta_4<0$ below it and $\Delta_4>0$ above it.
+
+\subsection{Ordering all Hurwitz thresholds}
+For $0<u<u_*$, \eqref{eq:phaseD2} has positive leading coefficient and negative constant term, so it has exactly one positive zero $t_2$.
+The leading coefficient of $\Delta_3$ as a cubic in $t$ is
+\[
+ 6G(u),\qquad G(u)=32-162u-141u^2-116u^3.
+\]
+This is positive because $u<u_*<1/6$ and $G(1/6)=59/108>0$. The linear and constant coefficients of $\Delta_3$ are strictly negative polynomials in $u$; the quadratic coefficient may have either sign. Again Descartes' rule gives exactly one positive zero $t_3$.
+
+The polynomial $Y=a_1a_4-a_5$ has the following coefficients in descending powers of $t$:
+\begin{align}\label{eq:Ycoeffs}
+ &36-150u-168u^2-60u^3,\notag\\
+ &68-226u-330u^2-160u^3-21u^4,\notag\\
+ &32-88u-166u^2-100u^3-22u^4-u^5.
+\end{align}
+All three are decreasing and strictly positive at $U$, where their values are respectively
+$3744/1331$, $219840/14641$, and $1592328/161051$. Hence $Y>0$.
+At $t=t_2$, identity \eqref{eq:d3} gives $\Delta_3=-a_1Y<0$, so $t_2<t_3$. At $t=t_3$, \eqref{eq:d4} gives
+\[
+ \Delta_4=-\frac{a_5\Delta_2^2}{a_1}<0,
+\]
+so $t_3<T(u)$. Thus
+\[
+ 0<t_2<t_3<T(u).
+\]
+For $t>T(u)$, all first four Hurwitz determinants are positive; the fifth equals $a_5\Delta_4>0$. For $0<t\leq T(u)$ the fourth determinant is nonpositive. Combining this with the earlier exclusions and legality proves Theorem~\ref{thm:phase}.
+
+\begin{corollary}[An explicit whole legal cone]\label{cor:cone}
+For Geneson's graph, every legal pair satisfying
+\[
+ 1<\delta/\eps\leq11/10
+\]
+has a stable positive full-support fixed point.
+\end{corollary}
+\begin{proof}
+Here $0<u\leq1/10$. Direct substitution gives
+\[
+ u^4\Delta_4(u,1/u)=768-5568u-12096u^2+\sum_{k=3}^{14}c_ku^k,
+ \qquad c_k>0.
+\]
+Its lower bound at $u\leq1/10$ is
+$768-5568/10-12096/100=2256/25>0$.
+Therefore $1/u>T(u)$, and every legal $t>1/u$ is stable by Theorem~\ref{thm:phase}.
+\end{proof}
+
+For orientation only, the certified isolators imply
+\[
+ T(1/10)\approx4.28377051836,\qquad T(4/25)\approx52.93123957158.
+\]
+The exact definition is the unique positive root of \eqref{eq:phaseH4}, not the rounded values. In particular, the previously used ray $\delta/\eps=29/25$ has its full-support threshold explicitly resolved by $u=4/25$. No assertion of an ordinary nonlinear Hopf bifurcation is made: the CTLN is exactly linear near a strictly positive equilibrium.
+
+\section{A weighted rule for adding inactive neurons}\label{sec:external}
+The support test has a useful graph interpretation once a permitted motif has been identified. It is an algebraic specialization of the standard off-neuron equations, not an independently new general support criterion.
+
+\begin{proposition}[Weighted missing-source rule]\label{prop:external}
+Let an active motif satisfy $y=(I+\beta N)^{-1}\ones>0$ and let $s=\ones^Ty$. For an outside neuron $k$, let $M_k\subseteq\sigma$ be the active sources with no edge to $k$. Then
+\begin{equation}\label{eq:external}
+ x^*_\sigma=\frac{\theta y}{\eps(1+ts)},\qquad
+ \theta+\sum_{j\in\sigma}W_{kj}x_j^*
+ =\frac{\theta\bigl(1-\beta\sum_{j\in M_k}y_j\bigr)}{1+ts}.
+\end{equation}
+Consequently $k$ is strictly inactive exactly when
+\begin{equation}\label{eq:weighted}
+ \beta\sum_{j\in M_k}y_j>1.
+\end{equation}
+If the motif is positive stable and every added neuron satisfies this strict inequality, the embedded equilibrium is locally exponentially stable, whatever the edges back to the support or among the inactive neurons.
+\end{proposition}
+\begin{proof}
+An active source weight is $-\eps t$ when its edge is present and $-\eps(t+\beta)$ when absent. Substitute the first formula in \eqref{eq:external} and collect terms. Strict negativity makes each inactive threshold derivative zero; the local Jacobian is block triangular with inactive block $-I$. The signs of the active eigenvalues are unchanged.
+\end{proof}
+
+For a clique, $y=\ones$, so \eqref{eq:weighted} holds exactly when at least one source is missing. This is the target-free clique rule. For a nonclique motif, the relevant criterion is a \emph{weighted} deficit, not just one missing edge.
+
+At the rational witness \eqref{eq:seedparams},
+\begin{equation}\label{eq:weights}
+ \beta y=\frac{(355971,695100,695100,841071,161490,1282071)^T}{1613071}.
+\end{equation}
+The inclusion-minimal missing-source sets that keep an outside neuron silent are precisely
+\begin{align}\label{eq:antichain}
+ &\{1,6\},\ \{2,6\},\ \{3,6\},\ \{4,6\},\notag\\
+ &\{1,2,3\},\ \{1,2,4\},\ \{1,3,4\},\ \{2,3,4\},\
+ \{2,4,5\},\ \{3,4,5\}.
+\end{align}
+Every superset of one of these works. Exact comparison of all 64 subsets shows that none has threshold mass exactly one. No singleton suffices. This permits arbitrary finite enlargements of the ambient network while keeping the six-neuron motif active; this operation is distinct from the active-support enlargement in Theorem~\ref{thm:family}.
+
+\section{Reproducibility, audit, and claim limits}\label{sec:repro}
+The release contains the following proof-bearing files:
+\begin{center}\small
+\begin{tabular}{p{.45\linewidth}p{.47\linewidth}}\toprule
+File & Role\\\midrule
+\code{code/exact\_polys.py}&Integer-polynomial kernel; determinant and orbit primitives.\\
+\code{code/generate\_small\_order.py}&Newton-identity construction of the small-order instructions.\\
+\code{code/verify\_small\_order.py}&Independent signed-permutation reconstruction and complete labelled coverage.\\
+\code{code/verify\_family.py}&All-$r$ quotient, positivity, Hurwitz, and limiting-quartic identities.\\
+\code{code/verify\_phase\_and\_witness.py}&Phase bounds, root isolators, exact seed, and external antichain.\\
+\code{code/audit\_regressions.py}&Implementation cross-checks and invalid-certificate rejection.\\
+\code{certificates/*.json}&Complete finite instructions and polynomial coefficient vectors.\\\bottomrule
+\end{tabular}
+\end{center}
+From the release root, run
+\begin{verbatim}
+python3 code/verify_all.py --regenerate --read-only
+\end{verbatim}
+Python 3.9 or later and its standard library suffice. Do not use optimization mode \code{-O}; each checker rejects disabled assertions. This command regenerates the finite instructions, verifies them, checks the family and phase identities, and writes logs under \code{verification/}. Execution was completed successfully using Python 3.13.5. Elapsed times are operational metadata, not part of the mathematical certificate.
+
+The regression audit compares Newton identities, direct signed products, and fraction-free Bareiss elimination on 149 reproducibly selected graphs, including every labelled graph through order three. It checks 596 determinant values, 2,244 Cramer values, and 596 characteristic values, and rejects nine deliberately invalid certificates. It also evaluates the generic quintic square identity at 100 exact integer coefficient tuples. These are implementation sanity checks; the exhaustive polynomial proof, not the finite spot checks, covers the continuous parameter domain.
+
+\paragraph{Trusted boundary.}
+The proof trusts the mathematical reductions, the Python interpreter, and the supplied integer-polynomial and orbit implementations. The generator and checker use different determinant constructions but share some small polynomial and permutation utilities. This is implementation diversity, not an assertion of institutional or reviewer independence. No Lean, Coq, Isabelle, or other proof-assistant kernel has checked the manuscript. No independent external referee report is included.
+
+\paragraph{Priority and attribution.}
+The graph \eqref{eq:Nseed}, the counterexample itself, the permission reduction, and the earlier modular nondegeneracy device are attributed to \cite{G2026}. The at-most-four result is attributed to \cite{CGM2024}. The proposed new contributions are the exact five-neuron exclusion and resulting sharp minimum, the explicit all-size twin family, and the seed's complete legal parameter region. A bounded public-literature search through 1 October 2026 found no competing resolution of the five-neuron gap; this is not an exhaustive priority guarantee. The source audit is included separately.
+
+\paragraph{Interpretation and limits.}
+The results concern the mathematical CTLN model with uniform positive input and its specified legal weights. They do not demonstrate a biological mechanism in measured neural tissue, classify nonlinear attractors, or establish global convergence. They do show that a pure clique rule cannot be restored simply by increasing network size: stable nonclique active supports exist at unbounded sizes, while small supports retain a sharp clique classification. No prospective REF star rating is asserted by the proof package.
+
+\paragraph{AI assistance and release status.}
+This candidate and its code were developed in an AI-assisted research session, including proof development, counterexample search, symbolic derivation, and computational checks. The scholarly creator is Anonymous; account ownership does not imply research authorship. Publication and archiving do not establish external endorsement, correctness, priority, or peer-review status. The revision response records the supplied model-review findings and their disposition.
+
+\appendix
+\section{Exact coefficients for the three hard five-vertex cases}\label{app:hard}
+For a vector $(c_0,\ldots,c_d)$ below, the corresponding polynomial is $\sum_{i=0}^d c_i u^i$, or $\sum_i c_i x^i$ in the shifted table. Each polynomial is displayed as $P_0+P_1v+P_2v^2$.
+
+\subsection*{$P_h=-u^2(a_3^2-4a_1a_5)$ after the legal substitution}
+\begin{description}[leftmargin=0pt]
+\item[Mask 74883:]
+\begin{align*}
+P_0 &: (736,3088,5020,4512,2459,816,146,8,-1),\\
+P_1 &: (1472,4928,5816,3544,1130,176,6),\\
+P_2 &: (736,1840,1292,440,31).
+\end{align*}
+\item[Mask 76900:]
+\begin{align*}
+P_0 &: (924,3532,5727,5288,3010,1054,203,14,-1),\\
+P_1 &: (1848,5432,6366,4028,1390,246,12),\\
+P_2 &: (924,1900,1343,500,44).
+\end{align*}
+\item[Mask 79298:]
+\begin{align*}
+P_0 &: (1120,4160,6736,6280,3640,1304,260,20,-1),\\
+P_1 &: (2240,6240,7296,4688,1680,312,16),\\
+P_2 &: (1120,2080,1504,584,56).
+\end{align*}
+\end{description}
+
+\subsection*{$-u^2\Delta_2$ after the legal substitution and $u=2+x$}
+\begin{description}[leftmargin=0pt]
+\item[Mask 74883:]
+\[
+ P_0:(196,494,346,107,16,1),\quad
+ P_1:(120,236,82,7),\quad P_2:(20,30).
+\]
+\item[Mask 76900:]
+\[
+ P_0:(424,767,472,133,18,1),\quad
+ P_1:(240,322,104,9),\quad P_2:(40,35).
+\]
+\item[Mask 79298:]
+\[
+ P_0:(684,1072,608,160,20,1),\quad
+ P_1:(392,440,136,12),\quad P_2:(60,40).
+\]
+\end{description}
+These short vectors can be reconstructed from the mask, \eqref{eq:characteristic}, and the quintic formulas; no polynomial factorization oracle is needed.
+
+\section{Coefficients defining the seed's exact phase boundary}\label{app:phase}
+The polynomials in \eqref{eq:phaseH4} are
+\begin{align*}
+B_4={}&6F,\\
+B_3={}&1536-21056u+33344u^2+123312u^3+162280u^4\\
+      &+107488u^5+37866u^6+5158u^7,\\
+B_2={}&-256-25728u+49728u^2+207584u^3+299504u^4\\
+      &+231240u^5+102944u^6+24250u^7+2301u^8,\\
+B_1={}&-2048-16896u+32000u^2+156160u^3+249728u^4\\
+      &+220528u^5+118400u^6+38136u^7+6722u^8+496u^9,\\
+B_0={}&-1024-5120u+6400u^2+42752u^3+77440u^4\\
+      &+77856u^5+49136u^6+19872u^7+4988u^8+706u^9+43u^{10}.
+\end{align*}
+The constant and linear coefficients of $\Delta_3$, used in the threshold-ordering argument, are
+\begin{align*}
+[t^0]\Delta_3={}&-160-1240u-1966u^2-1732u^3-804u^4-183u^5-16u^6,\\
+[t^1]\Delta_3={}&-172-3114u-4342u^2-3492u^3-1205u^4-146u^5.
+\end{align*}
+Its quadratic coefficient is $180-2810u-3270u^2-2520u^3-490u^4$.
+The whole-legal-cone calculation uses
+\begin{align*}
+ u^4\Delta_4(u,1/u)={}&768-5568u-12096u^2+33840u^3+189224u^4\\
+ &+415320u^5+574334u^6+561586u^7+406070u^8\\
+ &+220506u^9+89573u^{10}+26594u^{11}+5484u^{12}
+ +706u^{13}+43u^{14}.
+\end{align*}
+
+\begin{thebibliography}{9}
+\bibitem{CGM2019}
+Curto, C., Geneson, J., \& Morrison, K. (2019).
+Fixed points of competitive threshold-linear networks.
+\emph{Neural Computation, 31}(1), 94--155.
+\url{https://doi.org/10.1162/neco_a_01151}.
+Open preprint: \url{https://arxiv.org/abs/1804.00794}.
+
+\bibitem{CGM2024}
+Curto, C., Geneson, J., \& Morrison, K. (2024).
+Stable fixed points of combinatorial threshold-linear networks.
+\emph{Advances in Applied Mathematics, 154}, 102652.
+\url{https://doi.org/10.1016/j.aam.2023.102652}.
+Open version used: \url{https://arxiv.org/html/1909.02947v3}.
+
+\bibitem{G2026}
+Geneson, J. (2026).
+\emph{A six-neuron counterexample to the target-free clique conjecture}
+[Preprint, version 1, 23 July 2026]. arXiv.
+\url{https://doi.org/10.48550/arXiv.2607.21396}.
+Version used: \url{https://arxiv.org/html/2607.21396v1}.
+
+\bibitem{Gantmacher}
+Gantmacher, F. R. (1959).
+\emph{The theory of matrices} (Vol. II, Chapter XV, Section 6, ``The theorem of Routh--Hurwitz''). Chelsea.
+The Routh--Hurwitz criterion is used in the explicit determinant convention
+\eqref{eq:hurwitz}; bibliographic metadata checked against \cite{G2026}.
+\end{thebibliography}
+\end{document}

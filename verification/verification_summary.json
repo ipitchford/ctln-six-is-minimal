@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "scripts": [
+    {
+      "script": "generate_small_order.py",
+      "returncode": 0
+    },
+    {
+      "script": "verify_small_order.py",
+      "returncode": 0
+    },
+    {
+      "script": "verify_family.py",
+      "returncode": 0
+    },
+    {
+      "script": "verify_phase_and_witness.py",
+      "returncode": 0
+    },
+    {
+      "script": "audit_regressions.py",
+      "returncode": 0
+    }
+  ],
+  "python": "3.13.5",
+  "arithmetic": "arbitrary-precision integers and exact rational fractions",
+  "scope": "all loopless digraphs of orders 1..5; every r>=0 in the 5r+6 family; full legal seed parameter domain",
+  "elapsed_seconds": 9.492
+}

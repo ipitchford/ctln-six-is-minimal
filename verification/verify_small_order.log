@@ -1,0 +1,52 @@
+n=1: 1 graph types; 1 labelled graphs; all certificates PASS
+n=2: 3 graph types; 4 labelled graphs; all certificates PASS
+n=3: 16 graph types; 64 labelled graphs; all certificates PASS
+n=4: 218 graph types; 4096 labelled graphs; all certificates PASS
+n=5: 9608 graph types; 1048576 labelled graphs; all certificates PASS
+{
+  "status": "PASS",
+  "arithmetic": "arbitrary-precision integers only",
+  "coefficient_construction": "direct Leibniz determinant and Cramer expansions",
+  "graph_types": 9846,
+  "labelled_graphs": 1052741,
+  "coverage_by_order": {
+    "1": 1,
+    "2": 4,
+    "3": 64,
+    "4": 4096,
+    "5": 1048576
+  },
+  "certificate_counts": {
+    "1": {
+      "clique": 1
+    },
+    "2": {
+      "clique": 1,
+      "necessary_sign": 2
+    },
+    "3": {
+      "clique": 1,
+      "coefficient": 1,
+      "eigenvalue_1_minus_beta": 1,
+      "necessary_sign": 13
+    },
+    "4": {
+      "clique": 1,
+      "coefficient": 5,
+      "eigenvalue_1_minus_beta": 12,
+      "hurwitz": 1,
+      "necessary_sign": 199
+    },
+    "5": {
+      "clique": 1,
+      "coefficient": 134,
+      "cycle_quadratic": 2,
+      "eigenvalue_1_minus_beta": 242,
+      "hurwitz": 22,
+      "necessary_sign": 9203,
+      "quadratic_quotient": 1,
+      "quintic_split": 3
+    }
+  },
+  "elapsed_seconds": 3.57
+}

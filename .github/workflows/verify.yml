@@ -1,0 +1,32 @@
+name: Exact candidate checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Replay freshly extracted committed package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/ctln-clean"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/ctln-clean"
+          cd "$RUNNER_TEMP/ctln-clean"
+          {
+            echo "Commit: $GITHUB_SHA"
+            python --version
+            sha256sum -c MANIFEST.sha256
+            python code/verify_all.py --regenerate --read-only
+            python code/test_replay_guards.py
+            sha256sum -c MANIFEST.sha256
+          } 2>&1 | tee "$GITHUB_WORKSPACE/replay.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exact-replay-${{ github.sha }}
+          path: replay.log

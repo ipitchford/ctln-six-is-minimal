@@ -1,0 +1,42 @@
+{
+  "title": "Six Is Minimal: Exact Certification and Infinite Families of Stable Nonclique CTLNs",
+  "version": "1.1.0-candidate",
+  "date": "2026-10-01",
+  "status": "unrefereed candidate",
+  "authorship": "Anonymous; AI-assisted candidate",
+  "primary_result": "Minimum stable nonclique support size is exactly six in nondegenerate legal CTLNs",
+  "proof_type": [
+    "computer-assisted exact enumeration",
+    "analytic structural reduction",
+    "symbolic all-size certificate"
+  ],
+  "minimum_support_size": 6,
+  "small_order_maximum": 5,
+  "isomorphism_classes_checked": 9846,
+  "labelled_graphs_checked": 1052741,
+  "family_support_sizes": "5*r+6, every integer r>=0",
+  "seed_graph_source": "https://arxiv.org/html/2607.21396v1",
+  "seed_parameters": {
+    "epsilon": "1/12",
+    "delta": "11/120"
+  },
+  "all_size_parameters": {
+    "D": "30*r+31",
+    "epsilon": "1/(2*D+1)",
+    "delta": "(D+2)/(D*(2*D+1))"
+  },
+  "phase_cutoff_u_isolator": [
+    "0.166355027849",
+    "0.166355027850"
+  ],
+  "verification_status": "PASS",
+  "python_version_used": "3.13.5",
+  "runtime_dependencies": "Python 3.9+ standard library only; assertions enabled",
+  "formal_proof_assistant_verified": false,
+  "independent_external_peer_review": false,
+  "published": false,
+  "novelty_status": "bounded search found no matching resolution; priority not guaranteed",
+  "doi": "10.5281/zenodo.23089682",
+  "concept_doi": "10.5281/zenodo.23089681",
+  "repository": "https://github.com/ipitchford/ctln-six-is-minimal"
+}

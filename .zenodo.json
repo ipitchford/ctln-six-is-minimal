@@ -1,0 +1,45 @@
+{
+  "title": "Six Is Minimal: Exact Certification and Infinite Families of Stable Nonclique CTLNs",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "<p>Unrefereed computer-assisted mathematical candidate. In nondegenerate legal CTLNs with uniform positive drive, the minimum stable nonclique support size is exactly six. Exact integer-polynomial obstructions cover all graph classes through five vertices over the whole legal parameter domain. The six-neuron graph is prior work by Geneson. Further certificates give its full-support phase region and an explicit family on 5r+6 vertices with size-dependent parameters and shrinking stability margin.</p><p>Version 1.1 addresses the supplied AI-generated review: expanded antecedent comparison, explicit non-uniform margin, parameter-choice rationale and read-only replay. Original prose and data are CC0-1.0; original code is MIT. No external human peer review, formal verification, unaffiliated reproduction, exhaustive priority or biological validation is claimed.</p>",
+  "creators": [
+    {
+      "name": "Anonymous"
+    }
+  ],
+  "version": "1.1.0-candidate",
+  "publication_date": "2026-10-01",
+  "access_right": "open",
+  "license": "cc-zero",
+  "keywords": [
+    "CTLN",
+    "threshold-linear networks",
+    "stable fixed points",
+    "exact certificates",
+    "Hurwitz stability"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ipitchford/ctln-six-is-minimal",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.48550/arXiv.2607.21396",
+      "relation": "cites",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.1016/j.aam.2023.102652",
+      "relation": "cites",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.1162/neco_a_01151",
+      "relation": "cites",
+      "scheme": "doi"
+    }
+  ],
+  "doi": "10.5281/zenodo.23089682"
+}

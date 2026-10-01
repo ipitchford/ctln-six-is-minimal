@@ -1,0 +1,11 @@
+Command: python -O code/verify_all.py
+Expected result: rejection
+Return code: 1
+Traceback (most recent call last):
+  File "/mnt/data/evidence_press_ctln_minimality_v1_0/code/verify_all.py", line 31, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/mnt/data/evidence_press_ctln_minimality_v1_0/code/verify_all.py", line 10, in main
+    if not __debug__:raise RuntimeError('Verification requires enabled assertions; omit -O/PYTHONOPTIMIZE.')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Verification requires enabled assertions; omit -O/PYTHONOPTIMIZE.

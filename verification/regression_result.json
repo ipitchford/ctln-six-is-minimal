@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "graph_cross_checks": 149,
+  "determinant_cross_checks": 596,
+  "cramer_cross_checks": 2244,
+  "characteristic_cross_checks": 596,
+  "generic_quintic_identity_checks": 100,
+  "deliberate_invalid_certificates_rejected": 9,
+  "methods": "Newton identities, direct signed products, and fraction-free Bareiss elimination",
+  "random_seed": 6102026,
+  "elapsed_seconds": 0.221
+}

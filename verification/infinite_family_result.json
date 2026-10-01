@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "all_size_domain": "every integer r>=0; support size 5r+6",
+  "proof": "positive integer polynomial coefficients for permission and Hurwitz determinants; identity modulo 2 for global nondegeneracy",
+  "independent_coefficient_method": "principal-minor sums and Leibniz determinants",
+  "summary": {
+    "a5": {
+      "degree": 7,
+      "minimum_coefficient": 32362480939
+    },
+    "H1": {
+      "degree": 3,
+      "minimum_coefficient": 9000
+    },
+    "H2": {
+      "degree": 6,
+      "minimum_coefficient": 648000000
+    },
+    "H3": {
+      "degree": 11,
+      "minimum_coefficient": 26487782951364632
+    },
+    "H4": {
+      "degree": 16,
+      "minimum_coefficient": 3197149056000000000000000
+    }
+  },
+  "finite_quotient_regression_sizes": [
+    6,
+    11,
+    16,
+    21,
+    26
+  ],
+  "elapsed_seconds": 0.014
+}
